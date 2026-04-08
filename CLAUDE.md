@@ -20,7 +20,7 @@
 
 - [ ] Initialize ASP.NET Core Web API project (`dotnet new webapi -n DigitalButler.Api`)
 - [ ] Initialize Next.js frontend (`npx create-next-app@latest frontend`)
-- [ ] Set up PostgreSQL (local Docker container or native install)
+- [ ] Set up PostgreSQL (local native install)
 - [ ] Add EF Core packages: `Npgsql.EntityFrameworkCore.PostgreSQL`, `Microsoft.EntityFrameworkCore.Tools`
 - [ ] Configure `appsettings.Development.json` with connection string
 - [ ] Verify both apps start and the API returns a health-check response
@@ -179,7 +179,6 @@
 - [ ] Add member list view within a workspace
 - [ ] Responsive design pass (mobile-friendly board)
 - [ ] Write a project README with screenshots, tech stack, and architecture diagram
-- [ ] Containerize both apps with Docker + docker-compose
 - [ ] Deploy: backend to Azure App Service or Railway, frontend to Vercel, database to Neon or Supabase Postgres
 
 ---

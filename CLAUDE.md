@@ -68,13 +68,13 @@
 
 ### Steps
 
-- [ ] Add `Microsoft.AspNetCore.Authentication.JwtBearer` and `BCrypt.Net-Next` packages
-- [ ] Create `AuthController` with Register and Login actions
-- [ ] Hash passwords with BCrypt on registration
-- [ ] Generate JWT on successful login (include `UserId` and `Email` as claims)
-- [ ] Configure JWT validation in `Program.cs` (issuer, audience, signing key from config)
-- [ ] Add `[Authorize]` attribute to a test endpoint and verify with Postman/curl
-- [ ] Store JWT secret in user-secrets for development (never in appsettings)
+- [x] Add `Microsoft.AspNetCore.Authentication.JwtBearer` and `BCrypt.Net-Next` packages
+- [x] Create `AuthController` with Register and Login actions
+- [x] Hash passwords with BCrypt on registration
+- [x] Generate JWT on successful login (include `UserId` and `Email` as claims)
+- [x] Configure JWT validation in `Program.cs` (issuer, audience, signing key from config)
+- [x] Add `[Authorize]` attribute to a test endpoint and verify with Postman/curl
+- [x] Store JWT secret in user-secrets for development (never in appsettings)
 
 **Key learning:** Password hashing, JWT generation/validation, claims-based identity.
 
@@ -95,11 +95,12 @@
 
 ### Steps
 
-- [ ] Create `WorkspacesController`
-- [ ] On workspace creation, auto-insert a `WorkspaceMember` row with Role = Admin for the creator
-- [ ] Build a **workspace authorization middleware/filter** that checks membership before allowing access
-- [ ] Create DTOs (request/response) — never expose entities directly
-- [ ] Write the member management endpoints with role-based checks
+- [x] Create `WorkspacesController`
+- [x] On workspace creation, auto-insert a `WorkspaceMember` row with Role = Admin for the creator
+- [x] Build a **workspace authorization middleware/filter** that checks membership before allowing access
+- [x] Create DTOs (request/response) — never expose entities directly
+- [x] Write the member management endpoints with role-based checks
+- [ ] Add `GET /api/workspaces/{id}/members` endpoint to list all members in a workspace
 
 **Key learning:** Authorization filters, multi-tenancy patterns, DTOs vs entities.
 

@@ -30,6 +30,17 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<TaskItem>()
             .HasIndex(t => new {t.ProjectId, t.Status, t.Position});
 
+            var testUserId = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
+
+            modelBuilder.Entity<User>().HasData(new User
+            {
+                Id = testUserId,
+                Email = "dev@test.com",
+                PasswordHash = "seeded-no-login",
+                CreatedAt = new DateTime(2026, 4, 9, 11, 0, 0, DateTimeKind.Utc)
+            });
+
+
         base.OnModelCreating(modelBuilder);
     }
 

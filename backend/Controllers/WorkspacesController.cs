@@ -70,6 +70,30 @@ public class WorkspacesController : ControllerBase
         return Ok(workspaces);
     }
 
+
+    [HttpGet("{id}/members")]
+    public async Task<IActionResult> GetMembers(Guid id)
+    {
+        var userId = Guid.Parse(User.FindFirst("UserId")!.Value);
+        
+        var currentMember = await mContext.WorkspaceMembers.FirstOrDefaultAsync(wm => wm.WorkspaceId == id && wm.UserId == userId );
+
+        if (currentMember is null)
+            return NotFound();
+        
+        var members = await mContext.WorkspaceMembers
+        .Where(wm => wm.WorkspaceId == id)
+        .Select(wm => new MemberResponse
+        {
+            UserId = wm.UserId,
+            Email = wm.User.Email,
+            Role = wm.Role
+        }).ToListAsync();
+
+        return Ok(members);
+    }
+
+
     [HttpPost("{id}/members")]
     public async Task<IActionResult> AddMember(Guid id, AddMemberRequest request )
    {
@@ -103,16 +127,26 @@ public class WorkspacesController : ControllerBase
 
         mContext.WorkspaceMembers.Add(newMember);
         await mContext.SaveChangesAsync();
-        return Ok();
+        return Ok(new MemberResponse
+        {
+            UserId = newMember.UserId,
+            Email = newMember.User.Email,
+            Role = newMember.Role
+        });
     }
+
     [HttpDelete("{workspaceId}/members/{memberUserId}")]
     public async Task<IActionResult> RemoveMember(Guid workspaceId, Guid memberUserId)
     { 
         var userId = Guid.Parse(User.FindFirst("UserId")!.Value);
 
-        var currentMember = await mContext.WorkspaceMembers.FirstOrDefaultAsync(wm => wm.WorkspaceId == workspaceId && wm.UserId == userId);
+        var currentMember = await mContext.WorkspaceMembers
+        .Include(wm => wm.User)
+        .FirstOrDefaultAsync(wm => wm.WorkspaceId == workspaceId && wm.UserId == userId);
 
-        var memberToRemove = await mContext.WorkspaceMembers.FirstOrDefaultAsync(wm => wm.WorkspaceId == workspaceId  && wm.UserId == memberUserId);
+        var memberToRemove = await mContext.WorkspaceMembers
+        .Include(wm => wm.User)
+        .FirstOrDefaultAsync(wm => wm.WorkspaceId == workspaceId  && wm.UserId == memberUserId);
 
         if (currentMember is null)
             return NotFound();
@@ -126,9 +160,43 @@ public class WorkspacesController : ControllerBase
         mContext.WorkspaceMembers.Remove(memberToRemove);
         await mContext.SaveChangesAsync();
 
-        return Ok();
+        return Ok(new MemberResponse
+        {
+            UserId = memberToRemove.UserId,
+            Email = memberToRemove.User.Email,
+            Role = memberToRemove.Role
+        });
     }
 
+    [HttpDelete("{workspaceId}")]
+    public async Task<IActionResult> DeleteWorkspace(Guid workspaceId)
+    {
+        var userId = Guid.Parse(User.FindFirst("UserId")!.Value);
+
+        var currentMember = await mContext.WorkspaceMembers
+        .FirstOrDefaultAsync(wm => wm.WorkspaceId == workspaceId && wm.UserId == userId);
+
+        if (currentMember is null)
+            return NotFound();
+
+        if (currentMember.Role != WorkspaceRole.Admin)
+            return Forbid();
+        
+        var workspace = await mContext.Workspaces
+        .FirstOrDefaultAsync(w => w.Id == workspaceId);
+
+        if (workspace is null)
+            return NotFound();
+        
+        mContext.Workspaces.Remove(workspace);
+        await mContext.SaveChangesAsync();
+        return Ok(new WorkspaceResponse
+        {
+            Id = workspace.Id,
+            Name = workspace.Name,
+            CreatedAt = DateTime.UtcNow
+        });
+    }
 
 
 

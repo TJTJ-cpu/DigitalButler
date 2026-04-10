@@ -100,7 +100,7 @@
 - [x] Build a **workspace authorization middleware/filter** that checks membership before allowing access
 - [x] Create DTOs (request/response) — never expose entities directly
 - [x] Write the member management endpoints with role-based checks
-- [ ] Add `GET /api/workspaces/{id}/members` endpoint to list all members in a workspace
+- [x] Add `GET /api/workspaces/{id}/members` endpoint to list all members in a workspace
 
 **Key learning:** Authorization filters, multi-tenancy patterns, DTOs vs entities.
 

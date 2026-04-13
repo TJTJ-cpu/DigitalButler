@@ -106,7 +106,6 @@ public class WorkspacesController : ControllerBase
 
         if (currentMember.Role != WorkspaceRole.Admin)
             return Forbid();
-        
         var newUser = await mContext.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
         if (newUser == null)

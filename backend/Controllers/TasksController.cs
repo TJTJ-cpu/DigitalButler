@@ -238,15 +238,29 @@ public class TasksController : ControllerBase
 
         if (currentMember.Role is WorkspaceRole.Viewer)
             return Forbid();
-        
+
+        var deletedProjectId = task.ProjectId;
+        var deletedStatus = task.Status;
+        var deletedPosition = task.Position;
+
+        using var transaction = await mContext.Database.BeginTransactionAsync();
+
         mContext.Tasks.Remove(task);
         await mContext.SaveChangesAsync();
+
+        await mContext.Tasks
+            .Where(t => t.ProjectId == deletedProjectId
+                     && t.Status == deletedStatus
+                     && t.Position > deletedPosition)
+            .ExecuteUpdateAsync(s => s.SetProperty(t => t.Position, t => t.Position - 1));
+
+        await transaction.CommitAsync();
 
         return Ok(new TaskResponse
         {
             Id = task.Id,
             Title = task.Title,
-           Description = task.Description,
+            Description = task.Description,
             Status = task.Status,
             Position = task.Position,
             CreatedAt = task.CreatedAt,

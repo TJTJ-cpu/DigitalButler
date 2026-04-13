@@ -14,20 +14,6 @@ Organize work into **workspaces** (teams/companies), containing **projects** (bo
 | Database     | PostgreSQL                                       |
 | Auth         | JWT (access tokens)                              |
 
-## Status
-
-Active development. Progress by roadmap phase:
-
-- [x] **Phase 0** — Project scaffolding & dev environment
-- [x] **Phase 1** — Database schema & entity models
-- [x] **Phase 2** — Authentication (register & login)
-- [x] **Phase 3** — Workspace & membership CRUD
-- [x] **Phase 4** — Projects & tasks API (with positional reorder on drag-drop)
-- [ ] **Phase 5** — Frontend foundation & auth flow
-- [ ] **Phase 6** — Kanban board UI
-- [ ] **Phase 7** — Polish & deployment
-
-See [CLAUDE.md](CLAUDE.md) for the full roadmap.
 
 ## Features
 
@@ -46,23 +32,7 @@ See [CLAUDE.md](CLAUDE.md) for the full roadmap.
 - Workspace switcher
 - Interactive Kanban board with drag-and-drop
 - Optimistic UI updates with rollback on failure
-
-## Project Structure
-
-```
-DigitalButler/
-├── backend/                      # ASP.NET Core Web API
-│   ├── Controllers/              # HTTP endpoints
-│   ├── Models/                   # EF Core entities
-│   ├── DTOs/                     # Request/response types
-│   ├── Data/                     # AppDbContext
-│   ├── Migrations/               # EF Core migrations
-│   └── Program.cs                # Startup, JWT config, DI
-├── frontend/                     # Next.js app (App Router)
-│   └── app/
-├── CLAUDE.md                     # Full implementation roadmap
-└── DigitalButler.sln
-```
+- 
 
 ## Getting Started
 

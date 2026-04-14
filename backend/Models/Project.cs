@@ -8,5 +8,7 @@ public class Project
 
     public Guid WorkspaceId { get; set; }
 
+    public Workspace Workspace { get; set; } = null!;
+
     public ICollection<TaskItem> Tasks { get; set; } = [];
 }

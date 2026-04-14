@@ -26,6 +26,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // Temporary — Swagger UI for API testing during development. Remove when frontend is ready.
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -73,6 +83,7 @@ if (app.Environment.IsDevelopment())
 }
 // End of temporary Swagger middleware
 
+app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 

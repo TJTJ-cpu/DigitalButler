@@ -1,5 +1,4 @@
 namespace DigitalButler.Api.DTOs;
-using DigitalButler.Api.Models;
 
 public class CreateProjectRequest
 {

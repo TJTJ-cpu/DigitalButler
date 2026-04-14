@@ -124,11 +124,11 @@
 
 ### Steps
 
-- [ ] Create `ProjectsController` and `TasksController`
-- [ ] For task creation, auto-assign `Position` as max + 1 within the target status column
-- [ ] For `/move`, accept `{ newStatus, newPosition }` and reorder affected tasks in a single transaction
-- [ ] Ensure all project/task routes validate workspace membership
-- [ ] Return tasks grouped or ordered by Status + Position for easy frontend consumption
+- [x] Create `ProjectsController` and `TasksController`
+- [x] For task creation, auto-assign `Position` as max + 1 within the target status column
+- [x] For `/move`, accept `{ newStatus, newPosition }` and reorder affected tasks in a single transaction
+- [x] Ensure all project/task routes validate workspace membership
+- [x] Return tasks grouped or ordered by Status + Position for easy frontend consumption
 
 **Key learning:** Positional ordering logic, transactional updates, nested resource authorization.
 

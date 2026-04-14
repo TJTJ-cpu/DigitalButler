@@ -1,28 +1,28 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, SyntheticEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "./lib/auth-context";
+import { useAuth } from "../lib/auth-context";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { register } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: SyntheticEvent) {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
     try {
-      await login(email, password);
+      await register(email, password);
       router.push("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setSubmitting(false);
     }
@@ -34,7 +34,7 @@ export default function LoginPage() {
         onSubmit={handleSubmit}
         className="w-full max-w-sm space-y-4 rounded-lg border border-gray-200 p-6 shadow-sm"
       >
-        <h1 className="text-2xl font-semibold">Log in to Digital Butler</h1>
+        <h1 className="text-2xl font-semibold">Create your account</h1>
 
         <div className="space-y-1">
           <label htmlFor="email" className="block text-sm font-medium">
@@ -71,13 +71,13 @@ export default function LoginPage() {
           disabled={submitting}
           className="w-full rounded bg-black py-2 font-medium text-white disabled:opacity-50"
         >
-          {submitting ? "Logging in..." : "Log in"}
+          {submitting ? "Creating account..." : "Register"}
         </button>
 
         <p className="text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link href="/register" className="underline">
-            Register
+          Already have an account?{" "}
+          <Link href="/login" className="underline">
+            Log in
           </Link>
         </p>
       </form>

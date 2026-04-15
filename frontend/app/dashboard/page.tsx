@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../lib/auth-context";
 import { apiFetch } from "../lib/api-client";
+
+import Link from "next/link"
 
 type Workspace = {
   id: string;
@@ -14,6 +16,9 @@ type Workspace = {
 export default function DashboardPage() {
   const router = useRouter();
   const { user, logout } = useAuth();
+
+  const [newWorkspaceName, setWorkspacesName] = useState("");
+  const [creating, setCreating] = useState(false);
 
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,6 +41,12 @@ export default function DashboardPage() {
   function handleLogout() {
     logout();
     router.replace("/login");
+  }
+
+  async function handleCreateWorkspace(e: SyntheticEvent) {
+    e.preventDefault();
+    if (!newWorkspaceName.trim())
+      return;
   }
 
   if (!user) {
@@ -68,14 +79,16 @@ export default function DashboardPage() {
 
       <ul className="space-y-2">
         {workspaces.map((ws) => (
-          <li
-            key={ws.id}
-            className="rounded border border-gray-200 p-4 hover:bg-gray-50"
-          >
-            <h2 className="font-medium">{ws.name}</h2>
-            <p className="text-xs text-gray-500">
-              Created {new Date(ws.createdAt).toLocaleDateString()}
-            </p>
+          <li key={ws.id}>
+            <Link
+              href={`/workspaces/${ws.id}`}
+              className="block rounded border border-gray-200 p-4 hover:bg-gray-50"
+            >
+              <h2 className="font-medium">{ws.name}</h2>
+              <p className="text-xs text-gray-500">
+                Created {new Date(ws.createdAt).toLocaleDateString()}
+              </p>
+            </Link>
           </li>
         ))}
       </ul>

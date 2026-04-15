@@ -140,34 +140,36 @@
 
 ### Steps
 
-- [ ] Set up Tailwind CSS (should come with create-next-app)
-- [ ] Create pages: `/login`, `/register`, `/dashboard`
-- [ ] Build auth context/provider that stores JWT in memory (not localStorage for security)
-- [ ] Create API client utility (fetch wrapper that attaches JWT to headers)
-- [ ] Implement login + register forms that call the backend
-- [ ] Add route protection: redirect unauthenticated users to `/login`
-- [ ] Display a basic dashboard listing the user's workspaces
+- [x] Set up Tailwind CSS (should come with create-next-app)
+- [x] Create pages: `/login`, `/register`, `/dashboard`
+- [x] Build auth context/provider that stores JWT in memory (not localStorage for security)
+- [x] Create API client utility (fetch wrapper that attaches JWT to headers)
+- [x] Implement login + register forms that call the backend
+- [x] Add route protection: redirect unauthenticated users to `/login`
+- [x] Display a basic dashboard listing the user's workspaces
 
 **Key learning:** React context, token management, protected routing in Next.js App Router.
 
 ---
 
-## Phase 6 — Kanban Board UI
+## Phase 6 — Kanban Board & Creation UI
 
-**Goal:** The drag-and-drop board — the centerpiece of the app.
+**Goal:** The drag-and-drop board — the centerpiece of the app — plus the forms to create workspaces, projects, and tasks from the UI.
 
 ### Steps
 
-- [ ] Install `@hello-pangea/dnd`
-- [ ] Build the board layout: three columns (Todo, In Progress, Done)
-- [ ] Fetch tasks from `GET /api/projects/{id}/tasks` on board load
-- [ ] Render tasks as draggable cards within their status columns
-- [ ] On drag-end, **optimistically update local state** immediately
-- [ ] Fire `PUT /api/tasks/{id}/move` in the background
-- [ ] On API failure, **roll back** the card to its previous position and show an error toast
-- [ ] Add "New Task" button per column with an inline form
+- [x] Install `@hello-pangea/dnd`
+- [x] Build the board layout: three columns (Todo, In Progress, Done)
+- [x] Fetch tasks from `GET /api/projects/{id}/tasks` on board load
+- [x] Render tasks as draggable cards within their status columns
+- [x] On drag-end, **optimistically update local state** immediately
+- [x] Fire `PUT /api/tasks/{id}/move` in the background
+- [x] On API failure, **roll back** the card to its previous position and show an error toast
+- [ ] Add "New Workspace" button on the dashboard with inline/modal form
+- [ ] Add "New Project" button on the workspace detail page with inline/modal form
+- [ ] Add "New Task" button per board column with an inline form
 
-**Key learning:** Optimistic UI updates, drag-and-drop libraries, state rollback patterns.
+**Key learning:** Optimistic UI updates, drag-and-drop libraries, state rollback patterns, reusable form + POST-to-API patterns.
 
 ---
 

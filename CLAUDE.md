@@ -241,6 +241,7 @@ This project uses **Conventional Commits** for a clean, readable history.
 4. **No period at the end** of the subject line
 5. **Body (optional) wraps at 72 characters** — use it to explain *why*, not *what*
 6. **Scope is optional** — use it to clarify area: `feat(auth): add JWT validation`
+7. Keep it short, only one sentence or around ten words max.
 
 ### Examples
 

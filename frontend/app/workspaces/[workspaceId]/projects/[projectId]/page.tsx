@@ -80,6 +80,18 @@ export default function ProjectBoardPage() {
       .sort((a, b) => a.position - b.position);
   }
 
+  function handleDeleteTask(taskId: string){
+    const previousTaks = tasks;
+
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    previousTaks.filter((t) => t.id !== taskId);
+    apiFetch(`/api/tasks/${taskId}`, {method: "DELETE"})
+    .catch((err) => {
+      setTasks(previousTaks);
+      setError(err instanceof Error ? err.message : "Failed to delete task")
+    });
+  }
+
   function handleDragEnd (result: DropResult) {
 
     const {source, destination, draggableId} = result;
@@ -145,49 +157,54 @@ export default function ProjectBoardPage() {
   }
 
   return (
-    <main className="mx-auto max-w-6xl p-6">
-      <header className="mb-6">
-        <Link href={`/workspaces/${workspaceId}`} className="text-sm text-gray-500 underline">
-          ← Back to projects
+    <main className="mx-auto max-w-[1400px] px-8 py-10">
+      <header className="mb-8">
+        <Link href={`/workspaces/${workspaceId}`} className="text-sm text-gray-400 transition-colors hover:text-gray-900">
+          &larr; Back to projects
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold">Board</h1>
+        <h1 className="mt-2 text-2xl font-bold tracking-tight">Board</h1>
       </header>
 
-      <form onSubmit={handleCreateTask} className="mb-6 flex gap-2">
+      <form onSubmit={handleCreateTask} className="mb-8 flex max-w-lg gap-2">
         <input
           type="text"
           value={newTaskName}
           onChange={(e) => setNewTaskName(e.target.value)}
-          placeholder="New project name"
-          className="flex-1 rounded border border-gray-300 px-3 py-2"
+          placeholder="New task name"
+          className="flex-1 rounded-lg border border-gray-200 px-3 py-2 transition-colors focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
           disabled={creating}
         />
         <button
           type="submit"
           disabled={creating || !newTaskName.trim()}
-          className="rounded bg-black px-4 py-2 font-medium text-white disabled:opacity-50"
+          className="rounded-lg bg-black px-5 py-2 font-medium text-white transition-opacity hover:opacity-80 disabled:opacity-40"
         >
-          {creating ? "Creating..." : "Create"}
+          {creating ? "Creating..." : "Add task"}
         </button>
       </form>
 
-      {loading && <p className="text-sm text-gray-500">Loading…</p>}
+      {loading && <p className="text-sm text-gray-500">Loading&hellip;</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}
 
       {!loading && !error && (
         <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           {COLUMNS.map((column) => (
             <Droppable key={column.status} droppableId={column.status}>
             {(provided) => (
             <section
               ref={provided.innerRef}
               {...provided.droppableProps}
-              className="rounded-lg border border-gray-200 bg-gray-50 p-3"
+              className="min-h-[200px] rounded-xl border border-gray-200 bg-gray-900 p-4"
             >
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-600">
-                {column.label}
-              </h2>
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-white">
+                  {column.label}
+                </h2>
+                <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs font-medium text-black">
+                  {tasksForColumn(column.status).length}
+                </span>
+              </div>
               <ul className="space-y-2">
                 {tasksForColumn(column.status).map((task, index) => (
                   <Draggable key={task.id} draggableId={task.id} index={index}>
@@ -196,15 +213,29 @@ export default function ProjectBoardPage() {
                         ref={dragProvided.innerRef}
                         {...dragProvided.draggableProps}
                         {...dragProvided.dragHandleProps}
-                        className="rounded border border-gray-200 bg-white p-3 text-gray-900 shadow-sm"
+                        className="group flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 text-gray-900 shadow-sm transition-shadow hover:shadow-md"
                       >
-                        <h3 className="font-medium">{task.title}</h3>
+                      <h3 className="text-sm font-medium">{task.title}</h3>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteTask(task.id);
+                        }}
+                        className="rounded p-1 text-gray-300 opacity-0 transition-all hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
+                        title="Delete task"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </button>
                       </li>
                     )}
                   </Draggable>
                 ))}
                 {tasksForColumn(column.status).length === 0 && (
-                  <li className="text-center text-xs text-gray-400">No tasks</li>
+                  <li className="rounded-lg border border-dashed border-gray-200 py-8 text-center text-xs text-gray-400">
+                    No tasks
+                  </li>
                 )}
               </ul>
               {provided.placeholder}

@@ -32,12 +32,15 @@ export default function LoginPage() {
     <main className="flex min-h-screen items-center justify-center p-6">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-4 rounded-lg border border-gray-200 p-6 shadow-sm"
+        className="w-full max-w-sm space-y-5 rounded-xl border border-gray-200 p-8 shadow-sm"
       >
-        <h1 className="text-2xl font-semibold">Log in to Digital Butler</h1>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
+          <p className="mt-1 text-sm text-gray-500">Log in to Digital Butler</p>
+        </div>
 
         <div className="space-y-1">
-          <label htmlFor="email" className="block text-sm font-medium">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
             Email
           </label>
           <input
@@ -46,12 +49,12 @@ export default function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded border border-gray-300 px-3 py-2"
+            className="w-full rounded-lg border border-gray-200 px-3 py-2 transition-colors focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
           />
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="password" className="block text-sm font-medium">
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
             Password
           </label>
           <input
@@ -60,7 +63,7 @@ export default function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded border border-gray-300 px-3 py-2"
+            className="w-full rounded-lg border border-gray-200 px-3 py-2 transition-colors focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
           />
         </div>
 
@@ -69,14 +72,14 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded bg-black py-2 font-medium text-white disabled:opacity-50"
+          className="w-full rounded-lg bg-black py-2.5 font-medium text-white transition-opacity hover:opacity-80 disabled:opacity-40"
         >
           {submitting ? "Logging in..." : "Log in"}
         </button>
 
-        <p className="text-center text-sm">
+        <p className="text-center text-sm text-gray-500">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="underline">
+          <Link href="/register" className="font-medium text-black underline underline-offset-2">
             Register
           </Link>
         </p>

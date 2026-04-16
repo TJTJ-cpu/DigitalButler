@@ -44,12 +44,12 @@
 
 ### Steps
 
-- [ ] Create C# entity classes under `Models/`
-- [ ] Create `AppDbContext` with `DbSet<>` for each entity
-- [ ] Configure relationships and constraints with Fluent API (composite unique on WorkspaceMember, cascade deletes, index on Task.Position)
-- [ ] Run `dotnet ef migrations add InitialCreate`
-- [ ] Run `dotnet ef database update` — verify tables in pgAdmin or psql
-- [ ] Seed a test workspace + user for development
+- [x] Create C# entity classes under `Models/`
+- [x] Create `AppDbContext` with `DbSet<>` for each entity
+- [x] Configure relationships and constraints with Fluent API (composite unique on WorkspaceMember, cascade deletes, index on Task.Position)
+- [x] Run `dotnet ef migrations add InitialCreate`
+- [x] Run `dotnet ef database update` — verify tables in pgAdmin or psql
+- [x] Seed a test workspace + user for development
 
 **Key learning:** EF Core migrations, Fluent API configuration, relational modeling.
 
@@ -168,15 +168,49 @@
 - [x] Add "New Workspace" button on the dashboard with inline/modal form
 - [x] Add "New Project" button on the workspace detail page with inline/modal form
 - [x] Add "New Task" button per board column with an inline form
-- [ ] Add delete button on task cards with confirmation
-- [ ] Add delete button on project page with confirmation
-- [ ] Add delete button on workspace page with confirmation
+- [x] Add delete button on task cards 
+- [x] Add delete button on project page with confirmation
+- [x] Add delete button on workspace page with confirmation
 
 **Key learning:** Optimistic UI updates, drag-and-drop libraries, state rollback patterns, reusable form + POST-to-API patterns.
 
 ---
 
-## Phase 7 — Polish & Portfolio-Ready
+## Phase 7 — Deletion Safeguards & UI Expansion
+
+**Goal:** Prevent accidental data loss for critical entities by adding confirmation friction, and optimize the Kanban board layout to utilize full screen width.
+
+### Steps
+
+- [x] Create a reusable `ConfirmationModal` component (UI popup with "Cancel" and "Confirm" buttons).
+- [x] Update Workspace deletion: Clicking "Delete Workspace" opens the modal showing "Are you sure you want to delete [Workspace Name]?".
+- [x] Update Project deletion: Clicking "Delete Project" opens the modal showing "Are you sure you want to delete [Project Name]?".
+- [x] Wire the "Confirm" button in the modals to execute the actual `DELETE` API calls.
+- [x] Refactor the `ProjectBoardPage` layout: Remove the `max-w-6xl` container restriction and replace it with `max-w-full px-4` or `max-w-[1400px]` so the columns expand to fill wasted screen space.
+- [x] Adjust the grid layout (`grid-cols-1 md:grid-cols-3`) to ensure columns stretch nicely across the newly available width.
+
+**Key learning:** React portals/modal state management, protecting destructive actions, and fluid responsive layouts in Tailwind.
+
+---
+
+## Phase 8 — Task Assignment & Team Color-Coding
+
+**Goal:** Enable teamwork by assigning tasks to specific workspace members and adding visual color cues to the board so users can instantly see who is working on what (e.g., Felix in yellow, Jeff in green).
+
+### Steps
+
+- [ ] Update the database schema: Add an `AssigneeId` (nullable foreign key) to the `Task` entity, linking it to a `WorkspaceMember` or `User`.
+- [ ] Add a `ThemeColor` string property to the `WorkspaceMember` or `User` entity to store their assigned color (e.g., hex codes or Tailwind color names).
+- [ ] Run EF Core migrations (`dotnet ef migrations add AddTaskAssignees`) and update the database.
+- [ ] Update the `TasksController` endpoints (`POST` and `PUT`) and DTOs to accept and return assignee data.
+- [ ] Update the Frontend "New Task" form to include a dropdown menu for assigning a team member from the workspace.
+- [ ] Modify the UI of the Draggable Task Card: Add a small footer section that displays the assignee's name (e.g., "Felix", "Jeff") with a background badge or border matching their specific color.
+
+**Key learning:** Handling optional foreign keys in EF Core, building UI dropdowns for relational data, and applying dynamic CSS styles (Tailwind) based on database values.
+
+---
+
+## Phase 9 — Polish & Portfolio-Ready
 
 **Goal:** Make it presentable and deployable.
 

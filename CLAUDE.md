@@ -165,9 +165,12 @@
 - [x] On drag-end, **optimistically update local state** immediately
 - [x] Fire `PUT /api/tasks/{id}/move` in the background
 - [x] On API failure, **roll back** the card to its previous position and show an error toast
-- [ ] Add "New Workspace" button on the dashboard with inline/modal form
-- [ ] Add "New Project" button on the workspace detail page with inline/modal form
-- [ ] Add "New Task" button per board column with an inline form
+- [x] Add "New Workspace" button on the dashboard with inline/modal form
+- [x] Add "New Project" button on the workspace detail page with inline/modal form
+- [x] Add "New Task" button per board column with an inline form
+- [ ] Add delete button on task cards with confirmation
+- [ ] Add delete button on project page with confirmation
+- [ ] Add delete button on workspace page with confirmation
 
 **Key learning:** Optimistic UI updates, drag-and-drop libraries, state rollback patterns, reusable form + POST-to-API patterns.
 

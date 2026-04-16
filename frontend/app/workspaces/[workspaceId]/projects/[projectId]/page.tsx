@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { SyntheticEvent } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../../../../lib/auth-context";
@@ -33,6 +34,9 @@ export default function ProjectBoardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [newTaskName, setNewTaskName] = useState("");
+  const [creating, setCreating] = useState(false);
+
   useEffect(() => {
     if (!user) {
       router.replace("/login");
@@ -49,6 +53,26 @@ export default function ProjectBoardPage() {
 
   if (!user)
     return null;
+
+  async function handleCreateTask(e: SyntheticEvent){
+    e.preventDefault();
+    if (!newTaskName.trim())
+      return;
+    setCreating(true);
+    setError(null);
+    try {
+      const created = await apiFetch<Task>("/api/projects/" + projectId + "/tasks", {
+      method: "POST",
+      body: JSON.stringify({title: newTaskName.trim()}),
+    })
+      setTasks((prev) => [...prev, created]);
+      setNewTaskName("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create task");
+    } finally {
+      setCreating(false);
+    }
+  }
 
   function tasksForColumn(status: TaskStatus): Task[] {
     return tasks
@@ -128,6 +152,24 @@ export default function ProjectBoardPage() {
         </Link>
         <h1 className="mt-2 text-2xl font-semibold">Board</h1>
       </header>
+
+      <form onSubmit={handleCreateTask} className="mb-6 flex gap-2">
+        <input
+          type="text"
+          value={newTaskName}
+          onChange={(e) => setNewTaskName(e.target.value)}
+          placeholder="New project name"
+          className="flex-1 rounded border border-gray-300 px-3 py-2"
+          disabled={creating}
+        />
+        <button
+          type="submit"
+          disabled={creating || !newTaskName.trim()}
+          className="rounded bg-black px-4 py-2 font-medium text-white disabled:opacity-50"
+        >
+          {creating ? "Creating..." : "Create"}
+        </button>
+      </form>
 
       {loading && <p className="text-sm text-gray-500">Loading…</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}

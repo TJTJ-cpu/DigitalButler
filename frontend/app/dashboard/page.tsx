@@ -20,6 +20,7 @@ export default function DashboardPage() {
   const [newWorkspaceName, setWorkspacesName] = useState("");
   const [creating, setCreating] = useState(false);
 
+
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +48,21 @@ export default function DashboardPage() {
     e.preventDefault();
     if (!newWorkspaceName.trim())
       return;
+    setCreating(true);
+    setError(null);
+
+    try {
+      const created = await apiFetch<Workspace>("/api/workspaces", {
+        method: "POST",
+        body: JSON.stringify({name:newWorkspaceName.trim()}),
+      });
+      setWorkspaces((prevWorkspace) => [...prevWorkspace, created]);
+      setWorkspacesName("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message: "Failed to create workspace")
+    } finally {
+      setCreating(false);
+    }
   }
 
   if (!user) {
@@ -67,6 +83,24 @@ export default function DashboardPage() {
           Log out
         </button>
       </header>
+
+      <form onSubmit={handleCreateWorkspace} className="mb-6 flex gap-2">
+        <input
+          type="text"
+          value={newWorkspaceName}
+          onChange={(e) => setWorkspacesName(e.target.value)}
+          placeholder="New workspace name"
+          className="flex-1 rounded border border-gray-300 px-3 py-2"
+          disabled={creating}
+        />
+        <button
+          type="submit"
+          disabled={creating || !newWorkspaceName.trim()}
+          className="rounded bg-black px-4 py-2 font-medium text-white disabled:opacity-50"
+        >
+          {creating ? "Creating..." : "Create"}
+        </button>
+      </form>
 
       {loading && <p className="text-sm text-gray-500">Loading…</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}

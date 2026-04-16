@@ -1,5 +1,6 @@
 "use client";
 
+import { SyntheticEvent } from "react";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -19,6 +20,8 @@ export default function WorkspaceDetailPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [newProjectName, setNewProjectName] = useState("");
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -34,7 +37,29 @@ export default function WorkspaceDetailPage() {
       .finally(() => setLoading(false));
   }, [user, router, workspaceId]);
 
-  if (!user) return null;
+  if (!user) 
+    return null;
+
+  async function handleCreateProject(e: SyntheticEvent){
+    e.preventDefault();
+    if (!newProjectName.trim())
+      return;
+    setCreating(false);
+    setError(null);
+
+    try {
+    const created = await apiFetch<Project>("/api/workspaces/" + workspaceId + "/projects", {
+    method: "POST",
+    body: JSON.stringify({name: newProjectName.trim()}),
+    });
+    setProjects((prev) => [...prev, created]);
+    setNewProjectName("")
+    } catch (err) {
+      setError(err instanceof Error ? err.message :"Failed to create project"  );
+    } finally {
+      setCreating(false);
+    }
+  }
 
   return (
     <main className="mx-auto max-w-3xl p-6">
@@ -44,6 +69,24 @@ export default function WorkspaceDetailPage() {
         </Link>
         <h1 className="mt-2 text-2xl font-semibold">Projects</h1>
       </header>
+      <form onSubmit={handleCreateProject} className="mb-6 flex gap-2">
+        <input
+          type="text"
+          value={newProjectName}
+          onChange={(e) => setNewProjectName(e.target.value)}
+          placeholder="New project name"
+          className="flex-1 rounded border border-gray-300 px-3 py-2"
+          disabled={creating}
+        />
+        <button
+          type="submit"
+          disabled={creating || !newProjectName.trim()}
+          className="rounded bg-black px-4 py-2 font-medium text-white disabled:opacity-50"
+        >
+          {creating ? "Creating..." : "Create"}
+        </button>
+      </form>
+
 
       {loading && <p className="text-sm text-gray-500">Loading…</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}

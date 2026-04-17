@@ -13,6 +13,12 @@ type Project = {
   name: string;
 };
 
+type Member = {
+  userId: string;
+  email: string;
+  role: string
+}
+
 export default function WorkspaceDetailPage() {
   const router = useRouter();
   const { workspaceId } = useParams<{ workspaceId: string }>();

@@ -193,30 +193,42 @@
 
 ---
 
-## Phase 8 — Task Assignment & Team Color-Coding
+## Phase 8 — Task Assignment
 
-**Goal:** Enable teamwork by assigning tasks to specific workspace members and adding visual color cues to the board so users can instantly see who is working on what (e.g., Felix in yellow, Jeff in green).
+**Goal:** Enable teamwork by assigning tasks to specific workspace members and displaying who is working on what on the board.
 
 ### Steps
 
-- [ ] Update the database schema: Add an `AssigneeId` (nullable foreign key) to the `Task` entity, linking it to a `WorkspaceMember` or `User`.
-- [ ] Add a `ThemeColor` string property to the `WorkspaceMember` or `User` entity to store their assigned color (e.g., hex codes or Tailwind color names).
-- [ ] Run EF Core migrations (`dotnet ef migrations add AddTaskAssignees`) and update the database.
-- [ ] Update the `TasksController` endpoints (`POST` and `PUT`) and DTOs to accept and return assignee data.
-- [ ] Update the Frontend "New Task" form to include a dropdown menu for assigning a team member from the workspace.
-- [ ] Modify the UI of the Draggable Task Card: Add a small footer section that displays the assignee's name (e.g., "Felix", "Jeff") with a background badge or border matching their specific color.
+- [x] Update the database schema: Add an `AssigneeId` (nullable foreign key) to the `Task` entity, linking it to a `User`.
+- [x] Run EF Core migrations and update the database.
+- [x] Update the `TasksController` endpoints (`POST` and `PUT`) and DTOs to accept and return assignee data.
+- [x] Modify the UI of the Draggable Task Card: Add a small footer section that displays the assignee's name.
 
-**Key learning:** Handling optional foreign keys in EF Core, building UI dropdowns for relational data, and applying dynamic CSS styles (Tailwind) based on database values.
+**Key learning:** Handling optional foreign keys in EF Core, building UI dropdowns for relational data.
 
 ---
 
-## Phase 9 — Polish & Portfolio-Ready
+## Phase 9 — Workspace Sharing & Member Management UI
+
+**Goal:** Let users invite others to their workspaces so teams can collaborate on boards together. The backend endpoints already exist (Phase 3) — this phase wires up the frontend.
+
+### Steps
+
+- [ ] Build a "Members" section on the workspace detail page that lists all current members (name/email, role, theme color badge).
+- [ ] Add an "Invite Member" form (email input + role dropdown: Admin, Member, Viewer) that calls `POST /api/workspaces/{id}/members`.
+- [ ] Add a "Remove" button next to each member (Admin only) that calls `DELETE /api/workspaces/{id}/members/{userId}` with a confirmation modal.
+- [ ] Show the current user's role in the workspace and hide admin-only actions (invite/remove) for non-admins.
+- [ ] Handle error states: user not found, user already a member, permission denied.
+**Key learning:** Building collaborative features, role-based UI visibility, connecting to existing API endpoints.
+
+---
+
+## Phase 10 — Polish & Portfolio-Ready
 
 **Goal:** Make it presentable and deployable.
 
 - [ ] Add loading skeletons and error states across pages
 - [ ] Add workspace switcher in the sidebar/header
-- [ ] Add member list view within a workspace
 - [ ] Responsive design pass (mobile-friendly board)
 - [ ] Write a project README with screenshots, tech stack, and architecture diagram
 - [ ] Deploy: backend to Azure App Service or Railway, frontend to Vercel, database to Neon or Supabase Postgres

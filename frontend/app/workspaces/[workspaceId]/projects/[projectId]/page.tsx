@@ -17,6 +17,8 @@ type Task = {
   status: TaskStatus;
   position: number;
   createdAt: string;
+  assigneeId: string | null;
+  assigneeEmail: string | null;
 };
 
 const COLUMNS: { status: TaskStatus; label: string }[] = [
@@ -213,21 +215,32 @@ export default function ProjectBoardPage() {
                         ref={dragProvided.innerRef}
                         {...dragProvided.draggableProps}
                         {...dragProvided.dragHandleProps}
-                        className="group flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 text-gray-900 shadow-sm transition-shadow hover:shadow-md"
+                        className="group rounded-lg border border-gray-200 bg-white p-2 text-gray-900 shadow-sm transition-shadow hover:shadow-md"
                       >
-                      <h3 className="text-sm font-medium">{task.title}</h3>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteTask(task.id);
-                        }}
-                        className="rounded p-1 text-gray-300 opacity-0 transition-all hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
-                        title="Delete task"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                        </svg>
-                      </button>
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-sm font-medium">{task.title}</h3>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteTask(task.id);
+                            }}
+                            className="rounded p-1 text-gray-300 opacity-0 transition-all hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
+                            title="Delete task"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        </div>
+                        {task.assigneeEmail && (
+                          <div className="mt-2">
+                            <span
+                              className="inline-block rounded-full px-0.5 py-0.5 text-[7px] font-cs text-white"
+                            >
+                              {task.assigneeEmail.split("@")[0]}
+                            </span>
+                          </div>
+                        )}
                       </li>
                     )}
                   </Draggable>

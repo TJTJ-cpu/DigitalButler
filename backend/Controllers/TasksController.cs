@@ -47,7 +47,9 @@ public class TasksController : ControllerBase
                 Description = t.Description,
                 Status = t.Status,
                 Position = t.Position,
-                CreatedAt = t.CreatedAt
+                CreatedAt = t.CreatedAt,
+                AssigneeId = t.AssigneeId,
+                AssigneeEmail = t.Assignee != null ? t.Assignee.Email : null,
             }).ToListAsync();
 
         return Ok(tasks);
@@ -87,11 +89,12 @@ public class TasksController : ControllerBase
             Position = newPosition,
             CreatedAt = DateTime.UtcNow,
             ProjectId = projectId,
-
+            AssigneeId = userId
         };
 
         mContext.Tasks.Add(newTask);
         await mContext.SaveChangesAsync();
+        await mContext.Entry(newTask).Reference(t => t.Assignee).LoadAsync();
 
         return Ok(new TaskResponse
         {
@@ -101,6 +104,8 @@ public class TasksController : ControllerBase
             Status = newTask.Status,
             Position = newTask.Position,
             CreatedAt = newTask.CreatedAt,
+            AssigneeId = newTask.AssigneeId,
+            AssigneeEmail = newTask.Assignee?.Email,
         });
     }
 
@@ -109,23 +114,25 @@ public class TasksController : ControllerBase
     {
         var userId = Guid.Parse(User.FindFirst("UserId")!.Value);
 
-        var task = await mContext.Tasks.Include(t => t.Project).FirstOrDefaultAsync(t => t.Id == taskId);
+        var task = await mContext.Tasks.Include(t => t.Project).Include(t => t.Assignee).FirstOrDefaultAsync(t => t.Id == taskId);
 
         if (task is null)
             return NotFound();
-        
+
         var currentMember = await mContext.WorkspaceMembers.FirstOrDefaultAsync(wm => wm.WorkspaceId == task.Project.WorkspaceId && wm.UserId == userId);
 
         if (currentMember is null)
             return NotFound();
-        
+
         if (currentMember.Role == WorkspaceRole.Viewer)
             return Forbid();
-        
+
         task.Title = request.Title;
         task.Description = request.Description;
-    
+        task.AssigneeId = request.AssigneeId;
+
         await mContext.SaveChangesAsync();
+        await mContext.Entry(task).Reference(t => t.Assignee).LoadAsync();
 
         return Ok(new TaskResponse
         {
@@ -134,7 +141,9 @@ public class TasksController : ControllerBase
             Description = task.Description,
             Status = task.Status,
             Position = task.Position,
-            CreatedAt = task.CreatedAt
+            CreatedAt = task.CreatedAt,
+            AssigneeId = task.AssigneeId,
+            AssigneeEmail = task.Assignee?.Email,
         });
     }
 
@@ -143,11 +152,11 @@ public class TasksController : ControllerBase
     {
         var userId = Guid.Parse(User.FindFirst("UserId")!.Value);
 
-        var task = await mContext.Tasks.Include(t => t.Project).FirstOrDefaultAsync(t => t.Id == taskId);
+        var task = await mContext.Tasks.Include(t => t.Project).Include(t => t.Assignee).FirstOrDefaultAsync(t => t.Id == taskId);
 
         if (task is null)
             return NotFound();
-        
+
         var currentMember = await mContext.WorkspaceMembers.FirstOrDefaultAsync(wm => wm.WorkspaceId == task.Project.WorkspaceId && wm.UserId == userId);
 
         if (currentMember is null)
@@ -210,6 +219,10 @@ public class TasksController : ControllerBase
         await mContext.SaveChangesAsync();
         await transaction.CommitAsync();
 
+        var moveMember = task.AssigneeId != null
+            ? await mContext.WorkspaceMembers.FirstOrDefaultAsync(wm => wm.UserId == task.AssigneeId && wm.WorkspaceId == task.Project.WorkspaceId)
+            : null;
+
         return Ok(new TaskResponse
         {
             Id = task.Id,
@@ -217,7 +230,9 @@ public class TasksController : ControllerBase
             Description = task.Description,
             Status = task.Status,
             Position = task.Position,
-            CreatedAt = task.CreatedAt
+            CreatedAt = task.CreatedAt,
+            AssigneeId = task.AssigneeId,
+            AssigneeEmail = task.Assignee?.Email,
         });
     }
 
@@ -226,11 +241,11 @@ public class TasksController : ControllerBase
     {
         var userId = Guid.Parse(User.FindFirst("UserId")!.Value);
 
-        var task = await mContext.Tasks.Include(t => t.Project).FirstOrDefaultAsync(t => t.Id == taskId);
+        var task = await mContext.Tasks.Include(t => t.Project).Include(t => t.Assignee).FirstOrDefaultAsync(t => t.Id == taskId);
 
         if (task is null)
             return NotFound();
-        
+
         var currentMember = await mContext.WorkspaceMembers.FirstOrDefaultAsync(wm => wm.WorkspaceId == task.Project.WorkspaceId && wm.UserId == userId);
 
         if (currentMember is null)
@@ -239,6 +254,8 @@ public class TasksController : ControllerBase
         if (currentMember.Role is WorkspaceRole.Viewer)
             return Forbid();
 
+        var deletedAssigneeEmail = task.Assignee?.Email;
+        var deletedAssigneeId = task.AssigneeId;
         var deletedProjectId = task.ProjectId;
         var deletedStatus = task.Status;
         var deletedPosition = task.Position;
@@ -264,6 +281,8 @@ public class TasksController : ControllerBase
             Status = task.Status,
             Position = task.Position,
             CreatedAt = task.CreatedAt,
+            AssigneeId = deletedAssigneeId,
+            AssigneeEmail = deletedAssigneeEmail,
         });
     }
 

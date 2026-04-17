@@ -10,6 +10,8 @@ public enum TaskStatus
 public class TaskItem
 {
     public Guid Id { get; set; }
+    public Guid ? AssigneeId {get; set;}
+    public User ? Assignee {get; set;}
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
     public TaskStatus Status { get; set; } = TaskStatus.Todo;

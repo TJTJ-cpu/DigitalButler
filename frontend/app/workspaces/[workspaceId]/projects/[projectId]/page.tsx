@@ -235,7 +235,7 @@ export default function ProjectBoardPage() {
                         {task.assigneeEmail && (
                           <div className="mt-2">
                             <span
-                              className="inline-block rounded-full px-0.5 py-0.5 text-[7px] font-cs text-white"
+                              className="inline-block rounded-full px-0.5 py-0.5 text-xs font-cs text-olive-500"
                             >
                               {task.assigneeEmail.split("@")[0]}
                             </span>

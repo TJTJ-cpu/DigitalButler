@@ -8,6 +8,7 @@ import { useAuth } from "../../lib/auth-context";
 import { apiFetch } from "../../lib/api-client";
 import ConfirmationModal from "@/app/component/ConfirmationModel";
 
+
 type Project = {
   id: string;
   name: string;
@@ -24,12 +25,17 @@ export default function WorkspaceDetailPage() {
   const { workspaceId } = useParams<{ workspaceId: string }>();
   const { user } = useAuth();
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [removeMemberTarget, setRemoveMemberTarget] = useState<string | null>(null);
 
   const [projects, setProjects] = useState<Project[]>([]);
+  const [newProjectName, setNewProjectName] = useState("");
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [newProjectName, setNewProjectName] = useState("");
   const [creating, setCreating] = useState(false);
+
+  const [members, setMembers] = useState<Member[]>([]);
+  const [newMemberName, setNewMemberName] = useState("");
 
   useEffect(() => {
     if (!user) {
@@ -41,8 +47,16 @@ export default function WorkspaceDetailPage() {
       .then((data) => setProjects(data))
       .catch((err) =>
         setError(err instanceof Error ? err.message : "Failed to load projects")
-      )
-      .finally(() => setLoading(false));
+      ) .finally(() => setLoading(false));
+
+    apiFetch<Member[]>(`/api/workspaces/${workspaceId}/members`)
+    .then((data) => setMembers(data))
+    .catch((err) =>
+    setError(err instanceof Error ? err.message :
+      "Failed to load members")
+    ) .finally(() => setLoading(false));
+
+
   }, [user, router, workspaceId]);
 
   if (!user)
@@ -67,6 +81,33 @@ export default function WorkspaceDetailPage() {
     } finally {
       setCreating(false);
     }
+  }
+  
+  async function handleInviteMember(e: SyntheticEvent) {
+    e.preventDefault();
+    setError(null);
+    try {
+      const newMember = await apiFetch<Member>(`/api/workspaces/${workspaceId}/members `,{
+          method: "POST",
+          body: JSON.stringify({email: newMemberName})}
+      );
+      setMembers((prev) => [...prev, newMember]);
+      setNewMemberName("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to add member")
+    }
+  }
+
+  async function handleRemoveMember(memberId:string) {
+    const previousMember = members;
+    setMembers((prev) => prev.filter((t) => t.userId !== memberId));
+
+    await apiFetch(`/api/workspaces/${workspaceId}/members/${memberId}`,{
+      method: "DELETE"
+    }).catch((err) => {
+      setMembers(previousMember);
+      setError(err instanceof Error ? err.message : "Failed to remove member.")
+    });
   }
 
   async function handleDeleteProject(projectID : string) {
@@ -124,19 +165,63 @@ export default function WorkspaceDetailPage() {
             >
               <h2 className="font-medium">{p.name}</h2>
             </Link>
-
             <button
               onClick={() => setDeleteTarget(p.id)}
               className="rounded p-1.5 text-gray-300 opacity-0 transition-all hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
               title="Delete project"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+
                 <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
             </button>
           </li>
         ))}
       </ul>
+
+      <section className="mt-12">
+        <h2 className="mb-4 text-lg font-semibold tracking-tight">Members</h2>
+        <form onSubmit={handleInviteMember} className="mb-4 flex gap-2">
+          <input
+            type="email"
+            value={newMemberName}
+            onChange={(e) => setNewMemberName(e.target.value)}
+            placeholder="Email address"
+            className="flex-1 rounded-lg border border-gray-200 px-3 py-2 transition-colors focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
+          />
+          <button
+            type="submit"
+            disabled={!newMemberName.trim()}
+            className="rounded-lg bg-black px-5 py-2 font-medium text-white transition-opacity hover:opacity-80 disabled:opacity-40"
+          >
+            Invite
+          </button>
+        </form>
+        <ul className="space-y-2">
+          {members.map((m) => (
+            <li
+              key={m.userId}
+              className="flex items-center justify-between rounded-lg border border-gray-200 p-4"
+            >
+              <span className="text-sm font-medium">{m.email}</span>
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+                  {m.role}
+                </span>
+                <button
+                  onClick={() => setRemoveMemberTarget(m.userId)}
+                  className="rounded p-1 text-gray-300 transition-all hover:bg-red-50 hover:text-red-500"
+                  title="Remove member"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <ConfirmationModal
         isOpen={deleteTarget !== null}
@@ -147,6 +232,17 @@ export default function WorkspaceDetailPage() {
           setDeleteTarget(null);
         }}
         onCancel={() => setDeleteTarget(null)}
+      />
+
+      <ConfirmationModal
+        isOpen={removeMemberTarget !== null}
+        title="Remove member"
+        message="Are you sure you want to remove this member from the workspace?"
+        onConfirm={() => {
+          if (removeMemberTarget) handleRemoveMember(removeMemberTarget);
+          setRemoveMemberTarget(null);
+        }}
+        onCancel={() => setRemoveMemberTarget(null)}
       />
     </main>
   );

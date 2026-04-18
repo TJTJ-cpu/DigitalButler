@@ -60,6 +60,7 @@ public class WorkspacesController : ControllerBase
         var userId = Guid.Parse(User.FindFirst("UserId")!.Value);
 
         var workspaces = await mContext.WorkspaceMembers.Where(wm => wm.UserId == userId)
+        .OrderByDescending(wm => wm.Workspace.CreatedAt)
         .Select(wm => new WorkspaceResponse
         {
             Id = wm.Workspace.Id,

@@ -58,7 +58,7 @@ export default function DashboardPage() {
         method: "POST",
         body: JSON.stringify({name:newWorkspaceName.trim()}),
       });
-      setWorkspaces((prevWorkspace) => [...prevWorkspace, created]);
+      setWorkspaces((prevWorkspace) => [created, ...prevWorkspace ]);
       setWorkspacesName("");
     } catch (err) {
       setError(err instanceof Error ? err.message: "Failed to create workspace")

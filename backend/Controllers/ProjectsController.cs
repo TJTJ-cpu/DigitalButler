@@ -63,11 +63,12 @@ public class ProjectsController : ControllerBase
 
         var projects = await mContext.Projects
         .Where(wm => wm.WorkspaceId == workspaceId)
+        .OrderByDescending(wm => wm.CreatedAt)
         .Select(wm => new ProjectResponse
         {
             Id = wm.Id,
             Name = wm.Name
-        }).ToListAsync();
+        }).ToListAsync() ;
         
         return Ok(projects);
     }

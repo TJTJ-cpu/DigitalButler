@@ -186,7 +186,7 @@ export default function WorkspaceDetailPage() {
       <section className="mt-12">
         <h2 className="mb-4 text-lg font-semibold tracking-tight">Members</h2>
         {isAdmin && (
-          <form onSubmit={handleInviteMember} className="mb-4 flex gap-2">
+          <form onSubmit={handleInviteMember} className="mb-4 flex flex-col gap-2 sm:flex-row">
             <input
               type="email"
               value={newMemberName}

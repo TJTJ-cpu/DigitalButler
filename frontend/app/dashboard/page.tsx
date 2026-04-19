@@ -88,7 +88,7 @@ export default function DashboardPage() {
 
   return (
     <main className="mx-auto max-w-3xl p-6">
-      <header className="mb-8 flex items-center justify-between">
+      <header className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Your workspaces</h1>
           <p className="mt-1 text-sm text-gray-500">Signed in as {user.email}</p>

@@ -228,7 +228,6 @@
 
 **Goal:** Make it presentable and deployable.
 
-- [ ] Add loading skeletons and error states across pages
 - [ ] Add workspace switcher in the sidebar/header
 - [ ] Responsive design pass (mobile-friendly board)
 - [ ] Write a project README with screenshots, tech stack, and architecture diagram

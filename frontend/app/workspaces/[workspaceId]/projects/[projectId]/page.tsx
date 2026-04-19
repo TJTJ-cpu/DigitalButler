@@ -159,7 +159,7 @@ export default function ProjectBoardPage() {
   }
 
   return (
-    <main className="mx-auto max-w-[1400px] px-8 py-10">
+    <main className="mx-auto max-w-[1400px] px-4 py-6 sm:px-8 sm:py-10">
       <header className="mb-8">
         <Link href={`/workspaces/${workspaceId}`} className="text-sm text-gray-400 transition-colors hover:text-gray-900">
           &larr; Back to projects

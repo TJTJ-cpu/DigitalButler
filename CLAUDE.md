@@ -18,13 +18,13 @@
 
 **Goal:** Get both apps running locally with a connected database.
 
-- [ ] Initialize ASP.NET Core Web API project (`dotnet new webapi -n DigitalButler.Api`)
-- [ ] Initialize Next.js frontend (`npx create-next-app@latest frontend`)
-- [ ] Set up PostgreSQL (local native install)
-- [ ] Add EF Core packages: `Npgsql.EntityFrameworkCore.PostgreSQL`, `Microsoft.EntityFrameworkCore.Tools`
-- [ ] Configure `appsettings.Development.json` with connection string
-- [ ] Verify both apps start and the API returns a health-check response
-- [ ] Create `.gitignore` covering both .NET and Node artifacts
+- [x] Initialize ASP.NET Core Web API project (`dotnet new webapi -n DigitalButler.Api`)
+- [x] Initialize Next.js frontend (`npx create-next-app@latest frontend`)
+- [x] Set up PostgreSQL (local native install)
+- [x] Add EF Core packages: `Npgsql.EntityFrameworkCore.PostgreSQL`, `Microsoft.EntityFrameworkCore.Tools`
+- [x] Configure `appsettings.Development.json` with connection string
+- [x] Verify both apps start and the API returns a health-check response
+- [x] Create `.gitignore` covering both .NET and Node artifacts
 
 **Deliverable:** Two running apps, one database, one repo.
 
@@ -214,11 +214,12 @@
 
 ### Steps
 
-- [ ] Build a "Members" section on the workspace detail page that lists all current members (name/email, role, theme color badge).
-- [ ] Add an "Invite Member" form (email input + role dropdown: Admin, Member, Viewer) that calls `POST /api/workspaces/{id}/members`.
-- [ ] Add a "Remove" button next to each member (Admin only) that calls `DELETE /api/workspaces/{id}/members/{userId}` with a confirmation modal.
-- [ ] Show the current user's role in the workspace and hide admin-only actions (invite/remove) for non-admins.
-- [ ] Handle error states: user not found, user already a member, permission denied.
+- [x] Build a "Members" section on the workspace detail page that lists all current members (name/email).
+- [x] Add an "Invite Member" form (email input + role dropdown: Admin, Member, Viewer) that calls `POST /api/workspaces/{id}/members`.
+- [x] Add a "Remove" button next to each member (Admin only) that calls `DELETE /api/workspaces/{id}/members/{userId}` with a confirmation modal.
+- [x] Show the current user's role in the workspace and hide admin-only actions (invite/remove) for non-admins.
+- [x] Handle error states: user not found, user already a member, permission denied.
+
 **Key learning:** Building collaborative features, role-based UI visibility, connecting to existing API endpoints.
 
 ---
@@ -290,7 +291,7 @@ This project uses **Conventional Commits** for a clean, readable history.
 4. **No period at the end** of the subject line
 5. **Body (optional) wraps at 72 characters** — use it to explain *why*, not *what*
 6. **Scope is optional** — use it to clarify area: `feat(auth): add JWT validation`
-7. Keep it short, only one sentence or around ten words max.
+7. **Keep it short** — only one sentence or around 10 words max.
 
 ### Examples
 
@@ -309,10 +310,3 @@ update                       # no type, no context
 WIP                          # not descriptive
 ```
 
-### Multi-line Commit (when more context is needed)
-
-```bash
-git commit -m "feat(board): add drag-and-drop task reordering" -m "Implements optimistic UI updates with rollback on API failure.
-Uses @hello-pangea/dnd for drag handling and PATCH /api/tasks/:id/move
-for persistence."
-```

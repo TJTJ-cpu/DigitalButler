@@ -24,8 +24,19 @@ export async function apiFetch<T>(
   });
 
   if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || `Request failed: ${response.status}`);
+    const body = await response.text();
+
+    if (body) {
+      throw new Error(body);
+    }
+
+    const readableMessage: Record<number, string> = {
+      403: "Permission denied",
+      404: "Not found",
+      409: "Already exists",
+    };
+
+    throw new Error(readableMessage[response.status] ?? `Request failed: ${response.status}`);
   }
 
   return response.json() as Promise<T>;

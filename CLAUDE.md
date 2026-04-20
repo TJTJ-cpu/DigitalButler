@@ -243,6 +243,8 @@
 - [ ] Due dates with calendar view
 - [ ] Dark mode toggle
 - [ ] CI/CD pipeline with GitHub Actions (build, test, deploy)
+- [ ] Account management — delete account, change password, update email (`DELETE /api/users/me`, read user ID from JWT claims, wrap in transaction)
+- [ ] Leave workspace (for Members/Viewers) — swap the "Delete Workspace" button for a "Leave Workspace" button when the current user is not Admin. Same confirmation modal, different icon (door/exit instead of trash), calls existing `DELETE /api/workspaces/{id}/members/{userId}` with the user's own ID. Redirect to dashboard on success.
 
 ---
 

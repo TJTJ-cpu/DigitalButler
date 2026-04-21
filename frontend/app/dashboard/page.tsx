@@ -12,6 +12,7 @@ type Workspace = {
   id: string;
   name: string;
   createdAt: string;
+  role: string;
 };
 
 export default function DashboardPage() {
@@ -21,7 +22,8 @@ export default function DashboardPage() {
   const [newWorkspaceName, setWorkspacesName] = useState("");
   const [creating, setCreating] = useState(false);
 
-  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Workspace | null>(null);
+  const [leaveTarget, setLeaveTarget] = useState<Workspace | null>(null);
 
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,8 +80,18 @@ export default function DashboardPage() {
       setError(err instanceof Error ? err.message :  "Failed to delete project");
     }
   )
-    
-    
+  }
+
+  async function handleLeaveWorkspace(workspaceId: string) {
+    const previousWorkspaces = workspaces;
+    setWorkspaces((prev) => prev.filter((t) => t.id !== workspaceId));
+
+    await apiFetch(`/api/workspaces/${workspaceId}/leave`, {
+      method: "DELETE"
+    }).catch((err) => {
+      setWorkspaces(previousWorkspaces);
+      setError(err instanceof Error ? err.message : "Failed to leave workspace");
+    });
   }
 
   if (!user) {
@@ -140,15 +152,27 @@ export default function DashboardPage() {
                 Created {new Date(ws.createdAt).toLocaleDateString()}
               </p>
             </Link>
-            <button
-              onClick={() => setDeleteTarget(ws.id)}
-              className="rounded p-1.5 text-gray-300 opacity-0 transition-all hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
-              title="Delete workspace"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
-            </button>
+            {ws.role === "Admin" ? (
+              <button
+                onClick={() => setDeleteTarget(ws)}
+                className="rounded p-1.5 text-gray-300 opacity-0 transition-all hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
+                title="Delete workspace"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </button>
+            ) : (
+              <button
+                onClick={() => setLeaveTarget(ws)}
+                className="rounded p-1.5 text-gray-300 opacity-0 transition-all hover:bg-amber-50 hover:text-amber-600 group-hover:opacity-100"
+                title="Leave workspace"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M3 3a1 1 0 011-1h8a1 1 0 011 1v2a1 1 0 11-2 0V4H5v12h6v-1a1 1 0 112 0v2a1 1 0 01-1 1H4a1 1 0 01-1-1V3zm13.707 5.293a1 1 0 010 1.414L14.414 12H9a1 1 0 110-2h5.414l-1.707-1.707a1 1 0 011.414-1.414l3.586 3.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            )}
           </li>
         ))}
       </ul>
@@ -156,12 +180,24 @@ export default function DashboardPage() {
       <ConfirmationModal
         isOpen={deleteTarget !== null}
         title="Delete workspace"
-        message="Are you sure? This will delete the workspace and all its projects."
+        message={`Are you sure you want to delete ${deleteTarget?.name ?? ""}? This will delete the workspace and all its projects.`}
         onConfirm={() => {
-          if (deleteTarget) handleDeleteWorkspace(deleteTarget);
+          if (deleteTarget) handleDeleteWorkspace(deleteTarget.id);
           setDeleteTarget(null);
         }}
         onCancel={() => setDeleteTarget(null)}
+      />
+
+      <ConfirmationModal
+        isOpen={leaveTarget !== null}
+        title="Leave workspace"
+        message={`Are you sure you want to leave ${leaveTarget?.name ?? ""}? You will lose access to all its projects.`}
+        confirmLabel="Leave"
+        onConfirm={() => {
+          if (leaveTarget) handleLeaveWorkspace(leaveTarget.id);
+          setLeaveTarget(null);
+        }}
+        onCancel={() => setLeaveTarget(null)}
       />
     </main>
   );

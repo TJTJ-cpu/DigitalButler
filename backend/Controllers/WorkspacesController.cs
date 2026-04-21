@@ -50,7 +50,8 @@ public class WorkspacesController : ControllerBase
         {
             Id = workspace.Id,
             Name = workspace.Name,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            Role = WorkspaceRole.Admin
         });
     }
 
@@ -65,7 +66,8 @@ public class WorkspacesController : ControllerBase
         {
             Id = wm.Workspace.Id,
             Name = wm.Workspace.Name,
-            CreatedAt = wm.Workspace.CreatedAt
+            CreatedAt = wm.Workspace.CreatedAt,
+            Role = wm.Role
         }).ToListAsync();
 
         return Ok(workspaces);
@@ -168,6 +170,26 @@ public class WorkspacesController : ControllerBase
         });
     }
 
+    [HttpDelete("{workspaceId}/leave")]
+    public async Task<IActionResult> LeaveWorkspace(Guid workspaceId)
+    {
+        var userId = Guid.Parse(User.FindFirst("UserId")!.Value);
+
+        var currentMember = await mContext.WorkspaceMembers
+        .FirstOrDefaultAsync(wm => wm.WorkspaceId == workspaceId && wm.UserId == userId);
+
+        if (currentMember is null)
+            return NotFound();
+
+        if (currentMember.Role == WorkspaceRole.Admin)
+            return BadRequest("Admins cannot leave a workspace; delete it instead.");
+
+        mContext.WorkspaceMembers.Remove(currentMember);
+        await mContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
     [HttpDelete("{workspaceId}")]
     public async Task<IActionResult> DeleteWorkspace(Guid workspaceId)
     {
@@ -194,7 +216,8 @@ public class WorkspacesController : ControllerBase
         {
             Id = workspace.Id,
             Name = workspace.Name,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            Role = WorkspaceRole.Admin
         });
     }
 

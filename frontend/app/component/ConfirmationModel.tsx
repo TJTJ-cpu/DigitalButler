@@ -6,6 +6,7 @@ type ConfirmationModalProps = {
   message: string;
   onConfirm: () => void;
   onCancel: () => void;
+  confirmLabel?: string;
 };
 
 export default function ConfirmationModal({
@@ -14,6 +15,7 @@ export default function ConfirmationModal({
   message,
   onConfirm,
   onCancel,
+  confirmLabel = "Delete",
 }: ConfirmationModalProps) {
   if (!isOpen)
     return null;
@@ -40,7 +42,7 @@ export default function ConfirmationModal({
             onClick={onConfirm}
             className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
           >
-            Delete
+            {confirmLabel}
           </button>
         </div>
       </div>

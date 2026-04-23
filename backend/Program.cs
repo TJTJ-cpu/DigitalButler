@@ -1,3 +1,5 @@
+using DigitalButler.Api.Services;
+using DigitalButler.Api.Config;
 using DigitalButler.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,6 +10,12 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.Configure<DailySeedOptions>(
+    builder.Configuration.GetSection(DailySeedOptions.SectionName));
+
+builder.Services.AddScoped<IDailySeederService, DailySeederService>();
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {

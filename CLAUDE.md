@@ -229,9 +229,34 @@
 **Goal:** Make it presentable and deployable.
 
 - [ ] Add workspace switcher in the sidebar/header
-- [ ] Responsive design pass (mobile-friendly board)
+- [x] Responsive design pass (mobile-friendly board)
 - [ ] Write a project README with screenshots, tech stack, and architecture diagram
-- [ ] Deploy: backend to Azure App Service or Railway, frontend to Vercel, database to Neon or Supabase Postgres
+- [x] Deploy: backend to Render, frontend to Vercel, database to Supabase Postgres
+- [x] Leave workspace (for Members/Viewers) — conditional button on dashboard (door icon for non-Admins, trash for Admins), calls `DELETE /api/workspaces/{id}/leave` which derives userId from JWT and blocks Admins with 400.
+
+### Deployment stack (as shipped)
+
+| Layer       | Host                        | Notes                                                                                   |
+| ----------- | --------------------------- | --------------------------------------------------------------------------------------- |
+| Frontend    | Vercel                      | Framework Preset: **Next.js** (not "Other"); Root Directory: `frontend`                 |
+| Backend API | Render (free tier)          | Docker deploy from `backend/Dockerfile`                                                 |
+| Database    | Supabase Postgres           | Using **Session Pooler** host `aws-0-eu-west-1.pooler.supabase.com`, user `postgres.pttcgvxpsfoapaqlsxkm` — Render free tier is IPv4-only, Supabase Direct Connection is IPv6-only |
+
+### Environment variables on Render
+
+- `ConnectionStrings__DefaultConnection` — Supabase Session Pooler connection string
+- `Jwt__Secret` — 48-byte random base64 (rotated after earlier leak; generated via `System.Security.Cryptography.RandomNumberGenerator` in PowerShell since Windows has no `openssl`)
+- `Jwt__Issuer` = `DigitalButler`
+- `Jwt__Audience` = `DigitalButler`
+- `Cors__AllowedOrigins__0` — Vercel frontend URL (note: .NET config arrays use `__0`, `__1` indexing)
+
+### Gotchas resolved during deployment
+
+- **Vercel 404 on all routes** — Framework Preset was "Other". Had to change to "Next.js" and redeploy.
+- **CORS NetworkError** — `Program.cs` was reading `allowedOrigins` from config but still hardcoding `WithOrigins("http://localhost:3000")`. Fixed to pass the config value through.
+- **500 on login (IPv6 unreachable)** — Render free tier can't reach Supabase Direct Connection (IPv6 only). Switched to Session Pooler for IPv4.
+- **401 after login** — `Jwt__Issuer` and `Jwt__Audience` env vars weren't set on Render. Token was signed but validation failed.
+- **Deployment Protection** — Vercel Authentication was on by default, blocking public access. Disabled in Project Settings.
 
 ---
 
@@ -244,7 +269,7 @@
 - [ ] Dark mode toggle
 - [ ] CI/CD pipeline with GitHub Actions (build, test, deploy)
 - [ ] Account management — delete account, change password, update email (`DELETE /api/users/me`, read user ID from JWT claims, wrap in transaction)
-- [ ] Leave workspace (for Members/Viewers) — swap the "Delete Workspace" button for a "Leave Workspace" button when the current user is not Admin. Same confirmation modal, different icon (door/exit instead of trash), calls existing `DELETE /api/workspaces/{id}/members/{userId}` with the user's own ID. Redirect to dashboard on success.
+- [ ] Workspace switcher in header/sidebar
 
 ---
 

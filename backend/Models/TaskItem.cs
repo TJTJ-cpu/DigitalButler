@@ -17,6 +17,7 @@ public class TaskItem
     public TaskStatus Status { get; set; } = TaskStatus.Todo;
     public int Position { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? LastMovedAt { get; set; }
 
     public Guid ProjectId { get; set; }
     public Project Project { get; set; } = null!;

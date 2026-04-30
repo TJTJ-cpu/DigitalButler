@@ -48,6 +48,7 @@ public class TasksController : ControllerBase
                 Status = t.Status,
                 Position = t.Position,
                 CreatedAt = t.CreatedAt,
+                LastMovedAt = t.LastMovedAt,
                 AssigneeId = t.AssigneeId,
                 AssigneeEmail = t.Assignee != null ? t.Assignee.Email : null,
             }).ToListAsync();
@@ -104,6 +105,7 @@ public class TasksController : ControllerBase
             Status = newTask.Status,
             Position = newTask.Position,
             CreatedAt = newTask.CreatedAt,
+            LastMovedAt = newTask.LastMovedAt,
             AssigneeId = newTask.AssigneeId,
             AssigneeEmail = newTask.Assignee?.Email,
         });
@@ -142,6 +144,7 @@ public class TasksController : ControllerBase
             Status = task.Status,
             Position = task.Position,
             CreatedAt = task.CreatedAt,
+            LastMovedAt = task.LastMovedAt,
             AssigneeId = task.AssigneeId,
             AssigneeEmail = task.Assignee?.Email,
         });
@@ -215,6 +218,7 @@ public class TasksController : ControllerBase
 
         task.Status = request.NewStatus;
         task.Position = request.NewPosition;
+        task.LastMovedAt = DateTime.UtcNow;
 
         await mContext.SaveChangesAsync();
         await transaction.CommitAsync();
@@ -231,6 +235,7 @@ public class TasksController : ControllerBase
             Status = task.Status,
             Position = task.Position,
             CreatedAt = task.CreatedAt,
+            LastMovedAt = task.LastMovedAt,
             AssigneeId = task.AssigneeId,
             AssigneeEmail = task.Assignee?.Email,
         });
@@ -281,6 +286,7 @@ public class TasksController : ControllerBase
             Status = task.Status,
             Position = task.Position,
             CreatedAt = task.CreatedAt,
+            LastMovedAt = task.LastMovedAt,
             AssigneeId = deletedAssigneeId,
             AssigneeEmail = deletedAssigneeEmail,
         });

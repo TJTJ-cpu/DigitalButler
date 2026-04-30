@@ -17,6 +17,7 @@ type Task = {
   status: TaskStatus;
   position: number;
   createdAt: string;
+  lastMovedAt: string | null;
   assigneeId: string | null;
   assigneeEmail: string | null;
 };
@@ -120,7 +121,7 @@ export default function ProjectBoardPage() {
       if (sourceStatus === destStatus){
         const column = sortedColumn(sourceStatus);
         column.splice(source.index, 1);
-        column.splice(destination.index, 0, movedTask);
+        column.splice(destination.index, 0, { ...movedTask, lastMovedAt: new Date().toISOString() });
 
       return [
         ...prev.filter((t) => t.status !== sourceStatus),
@@ -131,7 +132,7 @@ export default function ProjectBoardPage() {
         const destCol = sortedColumn(destStatus);
 
         sourceCol.splice(source.index, 1);
-        const updatedTask = { ...movedTask, status: destStatus};
+        const updatedTask = { ...movedTask, status: destStatus, lastMovedAt: new Date().toISOString() };
         destCol.splice(destination.index, 0, updatedTask);
 
         return [
@@ -241,6 +242,11 @@ export default function ProjectBoardPage() {
                             </span>
                           </div>
                         )}
+                        <div className="mt-2 text-xs text-gray-400">
+                          {task.lastMovedAt
+                            ? `Moved ${new Date(task.lastMovedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+                            : `Created ${new Date(task.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`}
+                        </div>
                       </li>
                     )}
                   </Draggable>

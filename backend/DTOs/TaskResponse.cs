@@ -10,6 +10,7 @@ public class TaskResponse
     public TaskStatus Status { get; set; } = TaskStatus.Todo;
     public int Position { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime? LastMovedAt { get; set; }
     public Guid? AssigneeId { get; set; }
     public string? AssigneeEmail { get; set; }
 
